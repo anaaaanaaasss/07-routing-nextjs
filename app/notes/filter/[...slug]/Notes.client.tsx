@@ -2,20 +2,23 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
-import NoteForm from '../../components/NoteForm/NoteForm';
-import SearchBox from '../../components/SearchBox/SearchBox';
-import Pagination from '../../components/Pagination/Pagination';
-import Modal from '../../components/Modal/Modal';
-import NoteList from '../../components/NoteList/NoteList';
+import NoteForm from '@/components/NoteForm/NoteForm';
+import SearchBox from '@/components/SearchBox/SearchBox';
+import Pagination from '@/components/Pagination/Pagination';
+import Modal from '@/components/Modal/Modal';
+import NoteList from '@/components/NoteList/NoteList';
 import { useDebounce } from 'use-debounce';
 
-export default function NotesClient() {
+type Props = {
+  tag: string;
+};
+
+export default function NotesClient({ tag }: Props) {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Ensure modal-root div exists in DOM for portals
   useEffect(() => {
     if (!document.getElementById('modal-root')) {
       const modalRoot = document.createElement('div');
@@ -24,20 +27,15 @@ export default function NotesClient() {
     }
   }, []);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search]);
-
   const { data, isLoading, error } = useQuery({
-    queryKey: ['notes', { q: debouncedSearch, page: currentPage }],
-    queryFn: () => fetchNotes(debouncedSearch, currentPage),
-    placeholderData: (previousData) => previousData,
+    queryKey: ['notes', tag === 'All' ? '' : tag, debouncedSearch, currentPage],
+    queryFn: () => fetchNotes(tag === 'All' ? '' : tag, currentPage, debouncedSearch),
+    placeholderData: (prev) => prev,
   });
 
   if (isLoading) return <p>Loading, please wait...</p>;
   if (error) throw error as Error;
   if (!data || !data.notes) return <p>No data received.</p>;
-
 
   return (
     <>

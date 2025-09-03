@@ -1,12 +1,15 @@
 import type { Note } from '@/types/note';
 import axios from 'axios';
 
-export async function fetchNotes(q = '', page = 1) {
+export async function fetchNotes(q = '', page = 1, tag?: string) {
   const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN || process.env.NOTEHUB_TOKEN;
 
   const params: Record<string, string | number> = { page };
   if (q.trim()) {
     params.search = q;
+  }
+  if (tag && tag !== 'All') {
+    params.tag = tag;
   }
 
 const { data } = await axios.get<{ notes: Note[]; totalPages: number }>(
