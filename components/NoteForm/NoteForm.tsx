@@ -7,10 +7,10 @@ import { createNote } from '@/lib/api';
 interface FormValues {
   title: string;
   content: string;
-  tag: 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
+  tag: string;
 }
 
-const initialValues: FormValues = {
+const defaultValues: FormValues = {
   title: '',
   content: '',
   tag: 'Todo',
@@ -29,9 +29,11 @@ const validationSchema = Yup.object({
 
 interface NoteFormProps {
   onCancel: () => void;
+  initialValue?: FormValues;
+  disabled?: boolean;
 }
 
-export default function NoteForm({ onCancel }: NoteFormProps) {
+export default function NoteForm({ onCancel, initialValue, disabled }: NoteFormProps) {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: createNote,
@@ -43,7 +45,7 @@ export default function NoteForm({ onCancel }: NoteFormProps) {
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={initialValue ?? defaultValues}
       validationSchema={validationSchema}
       onSubmit={(values, actions) => {
         mutation.mutate({
@@ -57,7 +59,7 @@ export default function NoteForm({ onCancel }: NoteFormProps) {
       <Form className={css.form}>
         <div className={css.formGroup}>
           <label htmlFor="title">Title</label>
-          <Field id="title" type="text" name="title" className={css.input} />
+          <Field id="title" type="text" name="title" className={css.input} disabled={disabled} />
           <ErrorMessage name="title" component="span" className={css.error} />
         </div>
 
@@ -69,6 +71,7 @@ export default function NoteForm({ onCancel }: NoteFormProps) {
             name="content"
             rows={8}
             className={css.textarea}
+            disabled={disabled}
           />
           <ErrorMessage
             name="content"
@@ -79,7 +82,7 @@ export default function NoteForm({ onCancel }: NoteFormProps) {
 
         <div className={css.formGroup}>
           <label htmlFor="tag">Tag</label>
-          <Field as="select" id="tag" name="tag" className={css.select}>
+          <Field as="select" id="tag" name="tag" className={css.select} disabled={disabled}>
             <option value="Todo">Todo</option>
             <option value="Work">Work</option>
             <option value="Personal">Personal</option>
@@ -89,18 +92,20 @@ export default function NoteForm({ onCancel }: NoteFormProps) {
           <ErrorMessage name="tag" component="span" className={css.error} />
         </div>
 
-        <div className={css.actions}>
-          <button
-            type="button"
-            className={css.cancelButton}
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-          <button type="submit" className={css.submitButton}>
-            Create note
-          </button>
-        </div>
+        {!disabled && (
+          <div className={css.actions}>
+            <button
+              type="button"
+              className={css.cancelButton}
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+            <button type="submit" className={css.submitButton}>
+              Create note
+            </button>
+          </div>
+        )}
       </Form>
     </Formik>
   );

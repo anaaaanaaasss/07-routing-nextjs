@@ -1,7 +1,3 @@
-export default function DefaultModalLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>;
+export default function DefaultModalLayout() {
+  return null;
 }

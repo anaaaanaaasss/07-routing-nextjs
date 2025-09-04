@@ -27,6 +27,10 @@ export default function NotesClient({ tag }: Props) {
     }
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['notes', tag === 'All' ? '' : tag, debouncedSearch, currentPage],
     queryFn: () => fetchNotes(tag === 'All' ? '' : tag, currentPage, debouncedSearch),
