@@ -1,54 +1,60 @@
-import type { Note } from '@/types/note';
-import axios from 'axios';
+import axios from "axios";
+import type { Note, NoteId } from "@/types/note";
 
-export async function fetchNotes(q = '', page = 1, tag?: string) {
-  const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN || process.env.NOTEHUB_TOKEN;
+axios.defaults.baseURL = "https://notehub-public.goit.study/api";
+axios.defaults.headers.common["Authorization"] = `Bearer ${process.env.NEXT_PUBLIC_NOTEHUB_TOKEN}`;
 
-  const params: Record<string, string | number> = { page };
-  if (q.trim()) {
-    params.search = q;
-  }
-  if (tag && tag !== 'All') {
-    params.tag = tag;
-  }
+const Tags = ["All", "Todo", "Work", "Personal", "Meeting", "Shopping"] as const
 
-const { data } = await axios.get<{ notes: Note[]; totalPages: number }>(
-    'https://notehub-public.goit.study/api/notes',
-    {
-      params,
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return data;
+export type Tags = typeof Tags
+
+type SortBy = "created" | "updated"
+
+interface FetchNotes {
+	notes: Note[]
+	totalPages: number
 }
-export async function createNote(payload: { title: string; content: string; tag: string }) {
-  const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN || process.env.NOTEHUB_TOKEN;
-  const { data } = await axios.post<Note>(
-    'https://notehub-public.goit.study/api/notes',
-    payload,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return data;
+
+export const fetchNotes = async (
+	search?: string,
+	page: number = 1,
+	perPage: number = 12,
+	tag?: Exclude<Tags[number], "All">,
+	sortBy?: SortBy
+) => {
+	const { data } = await axios.get<FetchNotes>("notes", {
+		params: {
+			search,
+			page,
+			perPage,
+			tag,
+			sortBy,
+		},
+	})
+	return data
 }
-export async function deleteNote(id: string) {
-  const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN || process.env.NOTEHUB_TOKEN;
-  const { data } = await axios.delete<Note>(
-    `https://notehub-public.goit.study/api/notes/${id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return data;
+
+export const createNote = async (
+	title: string,
+	content: string,
+	tag: string
+) => {
+	const { data } = await axios.post<Note>("/notes", {
+		title,
+		content,
+		tag,
+	})
+	return data
 }
-export async function fetchNoteById(id: string) {
-  const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN || process.env.NOTEHUB_TOKEN;
-  const { data } = await axios.get<Note>(
-    `https://notehub-public.goit.study/api/notes/${id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return data;
+
+export const fetchNoteById = async (noteId: NoteId) => {
+	const { data } = await axios.get<Note>(`/notes/${noteId}`)
+	return data
 }
+
+export const deleteNote = async (noteId: NoteId) => {
+	const { data } = await axios.delete<Note>(`/notes/${noteId}`)
+	return data
+}
+
+export const getCategories = Tags

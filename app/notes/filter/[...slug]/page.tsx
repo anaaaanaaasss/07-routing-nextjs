@@ -1,24 +1,37 @@
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getQueryClient } from '@/lib/queryClient';
-import { fetchNotes } from '@/lib/api';
-import NotesClient from './Notes.client';
+import {
+	dehydrate,
+	HydrationBoundary,
+	QueryClient,
+} from "@tanstack/react-query"
+import { fetchNotes, getCategories, Tags } from "@/lib/api"
+import NotesClient from "./Notes.client"
 
-type Props = {
-  params: { slug?: string[] };
-};
+interface NotesFilterProps {
+	params: Promise<{ slug: Tags }>
+}
 
-export default async function Page({ params }: Props) {
-  const tag = params.slug?.[0] || 'All';
-  const queryClient = getQueryClient();
+export const dynamicParams = false
+export const revalidate = 900
 
-  await queryClient.prefetchQuery({
-    queryKey: ['notes', tag === 'All' ? '' : tag, '', 1],
-    queryFn: () => fetchNotes(tag === 'All' ? '' : tag, 1, ''),
-  });
+export const generateStaticParams = async () => {
+	const categories = getCategories
+	return categories.map(category => ({ slug: [category] }))
+}
 
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient tag={tag} />
-    </HydrationBoundary>
-  );
+export default async function NotesFilter({ params }: NotesFilterProps) {
+	const queryClient = new QueryClient()
+	const categories = getCategories
+	const { slug } = await params
+	const category = slug[0] === "All" ? undefined : slug[0]
+
+	await queryClient.prefetchQuery({
+		queryKey: ["notes", { search: "", page: 1, category }],
+		queryFn: () => fetchNotes("", 1, undefined, category),
+	})
+
+	return (
+		<HydrationBoundary state={dehydrate(queryClient)}>
+			<NotesClient categories={categories} category={category} />
+		</HydrationBoundary>
+	)
 }

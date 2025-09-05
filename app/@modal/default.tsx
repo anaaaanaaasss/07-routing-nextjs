@@ -1,3 +1,5 @@
-export default function DefaultModalLayout() {
-  return null;
+const Default = () => {
+	return null
 }
+
+export default Default

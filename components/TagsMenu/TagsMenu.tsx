@@ -1,33 +1,38 @@
 'use client';
 
+import { Routes } from '@/lib/routes';
+import css from './TagsMenu.module.css';
+import { Tags } from '@/lib/api';
 import Link from 'next/link';
 import { useState } from 'react';
-import css from './TagsMenu.module.css';
 
-const tags = ['All', 'Work', 'Personal', 'Meeting', 'Shopping', 'Todo'];
+interface TagsMenuProps {
+  categories: Tags;
+}
 
-export default function TagsMenu() {
-  const [isOpen, setIsOpen] = useState(false);
+const TagsMenu = ({ categories }: TagsMenuProps) => {
+  const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
 
-  const toggleMenu = () => {
-    setIsOpen(prev => !prev);
+  const handleClick = () => {
+    setIsNotesOpen(!isNotesOpen);
   };
 
   return (
     <div className={css.menuContainer}>
-      <button className={css.menuButton} onClick={toggleMenu}>
-        Notes ▾
+      <button className={css.menuButton} onClick={handleClick}>
+        Notes {isNotesOpen ? '▾' : '▴'}
       </button>
-      {isOpen && (
+      {isNotesOpen && categories && (
         <ul className={css.menuList}>
-          {tags.map(tag => (
-            <li key={tag} className={css.menuItem}>
+          {categories.map((category) => (
+            <li key={category} className={css.menuItem}>
               <Link
-                href={`/notes/filter/${tag}`}
+                href={Routes.NotesFilter + category}
+                scroll={false}
                 className={css.menuLink}
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsNotesOpen(false)}
               >
-                {tag}
+                {category}
               </Link>
             </li>
           ))}
@@ -35,4 +40,6 @@ export default function TagsMenu() {
       )}
     </div>
   );
-}
+};
+
+export default TagsMenu;

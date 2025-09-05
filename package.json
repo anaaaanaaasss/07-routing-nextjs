@@ -15,10 +15,13 @@
     "axois": "^0.0.1-security",
     "clsx": "^2.1.1",
     "formik": "^2.4.6",
+    "framer-motion": "^12.23.12",
     "modern-normalize": "^3.0.1",
     "next": "^15.5.2",
+    "notiflix": "^3.2.8",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hot-toast": "^2.6.0",
     "react-paginate": "^8.3.0",
     "use-debounce": "^10.0.6",
     "yup": "^1.7.0"

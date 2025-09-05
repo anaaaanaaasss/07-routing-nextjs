@@ -1,5 +1,11 @@
-'use client';
+"use client"
 
-export default function ErrorBoundary() {
-  return <p>Something went wrong in the filter route</p>;
+interface Props {
+	error: Error
 }
+
+const Error = ({ error }: Props) => {
+	return <p>Could not fetch the list of notes. {error.message}</p>
+}
+
+export default Error

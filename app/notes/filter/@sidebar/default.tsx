@@ -1,16 +1,26 @@
-// app/notes/filter/@sidebar/default.tsx
 import Link from 'next/link';
+import css from './SidebarNotes.module.css';
+import { getCategories } from '@/lib/api';
+import { Routes } from '@/lib/routes';
 
-const tags = ['All', 'Todo', 'Work', 'Personal', 'Meeting', 'Shopping'] as const;
+const SidebarNotes = async () => {
+  const categories = getCategories;
 
-export default function Sidebar() {
   return (
-    <ul style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {tags.map(tag => (
-        <li key={tag}>
-          <Link href={`/notes/filter/${tag}`}>{tag}</Link>
+    <ul className={css.menuList}>
+      {categories.map((category) => (
+        <li key={category} className={css.menuItem}>
+          <Link
+            href={Routes.NotesFilter + category}
+            scroll={false}
+            className={css.menuLink}
+          >
+            {category}
+          </Link>
         </li>
       ))}
     </ul>
   );
-}
+};
+
+export default SidebarNotes;

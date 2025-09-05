@@ -1,28 +1,18 @@
-import { useRouter } from 'next/navigation';
+'use client';
+
 import css from './SearchBox.module.css';
 
 interface SearchBoxProps {
-  value: string;
-  onSearch: (value: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function SearchBox({ value, onSearch }: SearchBoxProps) {
-  const router = useRouter();
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      router.push(`/notes/filter/All?search=${value}`);
-    }
-  };
-
+export default function SearchBox({ onChange }: SearchBoxProps) {
   return (
     <input
       className={css.input}
       type="text"
       placeholder="Search notes"
-      value={value}
-      onChange={(e) => onSearch(e.target.value)}
-      onKeyDown={handleKeyDown}
+      onChange={onChange}
     />
   );
 }
