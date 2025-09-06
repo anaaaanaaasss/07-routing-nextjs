@@ -3,11 +3,10 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { fetchNotes, getCategories } from "@/lib/api";
+import { fetchNotes } from "@/lib/api";
 import NotesClient from "@/app/notes/filter/[...slug]/Notes.client";
 export default async function NotesPage() {
   const queryClient = new QueryClient();
-  const categories = getCategories;
   const category = undefined;
   await queryClient.prefetchQuery({
     queryKey: ["notes", { search: "", page: 1, category }],
@@ -15,7 +14,7 @@ export default async function NotesPage() {
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient categories={categories} category={category} />
+      <NotesClient category={category} /><NotesClient category={category} />
     </HydrationBoundary>
   );
 }
