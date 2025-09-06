@@ -13,11 +13,10 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import css from './NotesClient.module.css';
 
 interface NotesClientProps {
-  categories: Tags;
   category: Exclude<Tags[number], 'All'> | undefined;
 }
 
-const NotesClient = ({ categories, category }: NotesClientProps) => {
+const NotesClient = ({ category }: NotesClientProps) => {
   const [query, setQuery] = useState<string>('');
   const [debouncedQuery] = useDebounce(query, 300);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -64,14 +63,14 @@ const NotesClient = ({ categories, category }: NotesClientProps) => {
         </button>
       </header>
       {isSuccess && notes && (
-        <NoteList notes={notes.notes} query={debouncedQuery} page={page} />
+        <NoteList notes={notes.notes} query={query} page={page} />
       )}
       {isModalOpen && (
         <Modal onClose={handleClose}>
           <NoteForm
-            categories={categories}
             onSubmit={handleClose}
             onCancel={handleClose}
+            categories={['All', 'Todo', 'Work', 'Personal', 'Meeting', 'Shopping'] as Tags}
           />
         </Modal>
       )}

@@ -11,7 +11,7 @@ const SidebarNotes = async () => {
       {categories.map((category) => (
         <li key={category} className={css.menuItem}>
           <Link
-            href={Routes.NotesFilter + category}
+            href={`${Routes.NotesFilter}/${category}`}
             scroll={false}
             className={css.menuLink}
           >

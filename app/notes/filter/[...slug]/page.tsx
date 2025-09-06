@@ -13,25 +13,24 @@ interface NotesFilterProps {
 export const dynamicParams = false
 export const revalidate = 900
 
-export const generateStaticParams = async () => {
+export async function generateStaticParams() {
 	const categories = getCategories
 	return categories.map(category => ({ slug: [category] }))
 }
 
 export default async function NotesFilter({ params }: NotesFilterProps) {
 	const queryClient = new QueryClient()
-	const categories = getCategories
 	const { slug } = await params
-	const category = slug[0] === "All" ? undefined : slug[0]
+	const category: Tags[number] | undefined = slug[0] === "All" ? undefined : slug[0];
 
 	await queryClient.prefetchQuery({
 		queryKey: ["notes", { search: "", page: 1, category }],
-		queryFn: () => fetchNotes("", 1, undefined, category),
+		queryFn: () => fetchNotes("", 1, category),
 	})
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
-			<NotesClient categories={categories} category={category} />
+			<NotesClient category={category} />
 		</HydrationBoundary>
 	)
 }
